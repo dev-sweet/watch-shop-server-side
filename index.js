@@ -24,7 +24,9 @@ async function run() {
     const database = client.db("watch_shop");
     const productsCollection = database.collection("products");
     const usersCollection = database.collection("users");
+    const ordersCollection = database.collection("orders");
 
+    // get all products or limited products if you want
     app.get("/products", async (req, res) => {
       const limit = parseInt(req.query.limit);
       let products;
@@ -39,6 +41,7 @@ async function run() {
       res.json(products);
     });
 
+    // get products by product id
     app.get("/products/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
@@ -52,8 +55,9 @@ async function run() {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
       res.json(result);
-      console.log(result);
     });
+
+    // put user
     app.put("/users", async (req, res) => {
       const user = req.body;
       const filter = { email: user.email };
@@ -67,6 +71,36 @@ async function run() {
       );
 
       res.json(result);
+    });
+
+    // work with orders collection
+
+    // post order to orders collection
+    app.post("/orders", async (req, res) => {
+      const orderInfo = req.body;
+      const result = await ordersCollection.insertOne(orderInfo);
+      res.json(result);
+    });
+
+    // get order by user <ema></ema>il address
+    app.get("/orders/:email", async (req, res) => {
+      const email = req.params.email;
+      console.log(email);
+      const filter = { email: email };
+      const result = ordersCollection.find(filter);
+      const orders = await result.toArray();
+
+      res.json(orders);
+      console.log(result);
+    });
+
+    // delete orders
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(query);
+      res.json(result);
+      console.log(result);
     });
   } finally {
   }
