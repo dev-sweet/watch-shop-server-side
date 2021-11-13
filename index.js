@@ -22,10 +22,13 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("watch_shop");
+
+    // collections
     const productsCollection = database.collection("products");
     const usersCollection = database.collection("users");
     const ordersCollection = database.collection("orders");
     const reviewsCollection = database.collection("reviews");
+
     // get all products or limited products if you want
     app.get("/products", async (req, res) => {
       const limit = parseInt(req.query.limit);
@@ -49,6 +52,7 @@ async function run() {
 
       res.json(product);
     });
+
     // post a product
     app.post("/products", async (req, res) => {
       const product = req.body;
@@ -105,6 +109,7 @@ async function run() {
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
+
       const user = await usersCollection.findOne(filter);
 
       let isAdmin = false;
