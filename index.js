@@ -109,9 +109,9 @@ async function run() {
     app.get("/users/:email", async (req, res) => {
       const email = req.params.email;
       const filter = { email: email };
-
+      console.log(email);
       const user = await usersCollection.findOne(filter);
-
+      console.log(user);
       let isAdmin = false;
       if (user?.role === "admin") {
         isAdmin = true;
@@ -128,7 +128,14 @@ async function run() {
       res.json(result);
     });
 
-    // get order by user <ema></ema>il address
+    // get all orders
+    app.get("/orders", async (req, res) => {
+      const result = ordersCollection.find({});
+      const orders = await result.toArray();
+      res.json(orders);
+    });
+
+    // get order by user email address
     app.get("/orders/:email", async (req, res) => {
       const email = req.params.email;
       console.log(email);
@@ -137,7 +144,16 @@ async function run() {
       const orders = await result.toArray();
 
       res.json(orders);
-      console.log(result);
+    });
+
+    // change pending status
+    app.put("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+
+      const updateDoc = { $set: { status: "shipping" } };
+      const result = await ordersCollection.updateOne(filter, updateDoc);
+      res.json(result);
     });
 
     // delete orders
