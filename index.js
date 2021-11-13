@@ -25,7 +25,7 @@ async function run() {
     const productsCollection = database.collection("products");
     const usersCollection = database.collection("users");
     const ordersCollection = database.collection("orders");
-
+    const reviewsCollection = database.collection("reviews");
     // get all products or limited products if you want
     app.get("/products", async (req, res) => {
       const limit = parseInt(req.query.limit);
@@ -101,6 +101,20 @@ async function run() {
       const result = await ordersCollection.deleteOne(query);
       res.json(result);
       console.log(result);
+    });
+
+    // post to reviews collection
+    app.post("/reviews", async (req, res) => {
+      const review = req.body;
+      const result = await reviewsCollection.insertOne(review);
+      res.json(result);
+      console.log(result);
+    });
+    // get reviews from reviews collection
+    app.get("/reviews", async (req, res) => {
+      const result = reviewsCollection.find({});
+      const reviews = await result.toArray();
+      res.json(reviews);
     });
   } finally {
   }
