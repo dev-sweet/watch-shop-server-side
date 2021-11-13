@@ -151,7 +151,7 @@ async function run() {
       const id = req.params.id;
       const filter = { _id: ObjectId(id) };
 
-      const updateDoc = { $set: { status: "shipping" } };
+      const updateDoc = { $set: { status: "shipped" } };
       const result = await ordersCollection.updateOne(filter, updateDoc);
       res.json(result);
     });
