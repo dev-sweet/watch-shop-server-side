@@ -49,6 +49,22 @@ async function run() {
 
       res.json(product);
     });
+    // post a product
+    app.post("/products", async (req, res) => {
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.json(result);
+      console.log(result);
+    });
+
+    // delete product
+    app.delete("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(filter);
+      console.log(result);
+      res.json(result);
+    });
 
     // post user to users collection
     app.post("/users", async (req, res) => {
@@ -71,6 +87,31 @@ async function run() {
       );
 
       res.json(result);
+    });
+
+    // make an admin
+    app.put("/users/admin", async (req, res) => {
+      const email = req.body.email;
+
+      const filter = { email: email };
+      const updateDoc = { $set: { role: "admin" } };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+
+      res.json(result);
+    });
+
+    //  test admin
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const user = await usersCollection.findOne(filter);
+
+      let isAdmin = false;
+      if (user?.role === "admin") {
+        isAdmin = true;
+      }
+      res.json({ admin: isAdmin });
     });
 
     // work with orders collection
@@ -110,6 +151,7 @@ async function run() {
       res.json(result);
       console.log(result);
     });
+
     // get reviews from reviews collection
     app.get("/reviews", async (req, res) => {
       const result = reviewsCollection.find({});
